@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>🎀 樹里ちゃんへのほめほめカード</title>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&family=Shippori+Mincho:wght@800&family=Zen+Marugothic&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+:root{
+  --brown:#a06844;--brown-dark:#7a4e2e;
+  --text:#5a3828;--text-soft:#a08878;
+  --pink:#f0a0c8;--purple:#c8a0f0;
+}
+html,body{
+  width:100%;min-height:100%;
+  font-family:'M PLUS Rounded 1c',sans-serif;
+  background:linear-gradient(160deg,#fce8f2 0%,#f4eafc 40%,#e8f0fc 100%);
+  overflow-x:hidden;
+}
+
+/* ════ TITLE SCREEN ════ */
+#s-title{
+  position:fixed;inset:0;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:18px;padding:32px 20px;
+  background:linear-gradient(160deg,#fce8f2 0%,#f4eafc 40%,#e8f0fc 100%);
+  transition:opacity 0.4s ease;
+  z-index:10;
+}
+#s-title.hide{opacity:0;pointer-events:none;}
+
+#s-title::before{
+  content:'';position:fixed;inset:10px;
+  border:2px solid rgba(240,180,210,0.4);
+  border-radius:30px;pointer-events:none;
+}
+
+.title-badge{
+  display:inline-block;
+  background:linear-gradient(135deg,#f0a0c8,#c0a0f0);
+  color:white;font-size:10px;letter-spacing:4px;
+  padding:5px 20px;border-radius:20px;
+  font-family:'Zen Marugothic',sans-serif;
+  box-shadow:0 2px 14px rgba(200,100,170,0.28);
+}
+.title-h1{
+  font-family:'Shippori Mincho',serif;
+  font-size:clamp(24px,7vw,38px);font-weight:800;
+  color:var(--brown-dark);letter-spacing:3px;
+  text-align:center;line-height:1.4;
+}
+.title-sub{font-size:13px;color:var(--text-soft);letter-spacing:1px;text-align:center;line-height:1.8;}
+
+.hero-wrap{position:relative;width:min(180px,50vw);}
+.hero-aura{
+  position:absolute;inset:-18px;
+  background:radial-gradient(ellipse,rgba(245,180,210,0.4) 0%,transparent 70%);
+  border-radius:50%;animation:aura 3.5s ease-in-out infinite;
+}
+@keyframes aura{0%,100%{transform:scale(1);opacity:0.6;}50%{transform:scale(1.12);opacity:1;}}
+.hero-img{
+  width:100%;border-radius:24px;display:block;
+  box-shadow:0 8px 24px rgba(160,100,130,0.22);
+  animation:float 4.5s ease-in-out infinite;
+}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+
+.btn-start{
+  background:linear-gradient(135deg,#f0a0c8 0%,#c8a0f0 100%);
+  color:white;font-family:'M PLUS Rounded 1c',sans-serif;
+  font-weight:800;font-size:17px;letter-spacing:2px;
+  padding:16px 40px;border:none;border-radius:50px;cursor:pointer;
+  box-shadow:0 5px 0 rgba(180,70,140,0.3),0 8px 24px rgba(200,100,170,0.3);
+  position:relative;overflow:hidden;
+  transition:transform 0.12s,box-shadow 0.12s;
+}
+.btn-start::after{content:'';position:absolute;top:0;left:0;right:0;height:50%;background:rgba(255,255,255,0.18);border-radius:50px 50px 0 0;}
+.btn-start:active{transform:translateY(4px);box-shadow:0 1px 0 rgba(180,70,140,0.3);}
+
+/* ════ CARD SCREEN ════ */
+#s-cards{
+  display:none;
+  flex-direction:column;
+  align-items:center;
+  min-height:100vh;
+  padding:24px 16px 40px;
+  gap:20px;
+}
+#s-cards.active{display:flex;}
+
+.cards-header{text-align:center;}
+.cards-header h2{
+  font-family:'Shippori Mincho',serif;
+  font-size:clamp(22px,6vw,32px);font-weight:800;
+  color:var(--brown-dark);letter-spacing:2px;
+}
+.cards-header p{font-size:13px;color:var(--text-soft);margin-top:6px;letter-spacing:1px;}
+
+.progress-wrap{
+  width:min(320px,90vw);
+  background:rgba(255,255,255,0.6);
+  border-radius:20px;padding:10px 16px;
+  display:flex;align-items:center;gap:10px;
+  border:1px solid rgba(240,180,210,0.4);
+}
+.progress-label{font-size:12px;color:var(--text-soft);white-space:nowrap;}
+.progress-bar-bg{flex:1;height:8px;background:rgba(240,180,210,0.3);border-radius:4px;overflow:hidden;}
+.progress-bar{height:100%;width:0%;background:linear-gradient(90deg,#f0a0c8,#c8a0f0);border-radius:4px;transition:width 0.5s ease;}
+.progress-count{font-size:12px;color:var(--purple);font-weight:800;white-space:nowrap;}
+
+.card-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:clamp(8px,2vw,12px);
+  width:min(420px,96vw);
+}
+
+/* タブレットは4列のまま広く、スマホは3列に */
+@media(max-width:400px){
+  .card-grid{grid-template-columns:repeat(3,1fr);width:96vw;}
+}
+@media(min-width:600px){
+  .card-grid{grid-template-columns:repeat(4,1fr);width:min(520px,90vw);gap:14px;}
+  .praise-card{padding:32px 28px 28px;}
+}
+
+/* ════ カード ════ */
+.card{
+  aspect-ratio:3/4;
+  position:relative;
+  cursor:pointer;
+  perspective:800px;
+}
+.card-inner{
+  width:100%;height:100%;
+  position:relative;
+  transform-style:preserve-3d;
+  transition:transform 0.6s cubic-bezier(0.34,1.2,0.64,1);
+}
+.card.flipped .card-inner{transform:rotateY(180deg);}
+
+.card-front,.card-back{
+  position:absolute;inset:0;
+  border-radius:16px;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  overflow:hidden;
+}
+
+/* 裏面（まだめくっていない） */
+.card-front{
+  background:linear-gradient(145deg,#f4a8cc 0%,#c890e8 50%,#a870d8 100%);
+  box-shadow:0 6px 0 rgba(160,60,180,0.25),0 10px 28px rgba(180,80,200,0.25);
+}
+.card-front::before{
+  content:'🎀';font-size:clamp(24px,6vw,32px);
+  filter:drop-shadow(0 2px 6px rgba(0,0,0,0.15));
+}
+.card-front::after{
+  content:'';position:absolute;top:8px;left:8px;right:8px;height:35%;
+  background:rgba(255,255,255,0.18);border-radius:12px 12px 50% 50%;
+}
+.card.flipped .card-front{box-shadow:none;}
+
+/* 表面（めくった後） */
+.card-back{
+  background:white;
+  transform:rotateY(180deg);
+  box-shadow:0 4px 20px rgba(200,150,180,0.2);
+  border:2px solid rgba(240,180,210,0.4);
+  padding:6px;
+  gap:4px;
+}
+.card-back img{
+  width:100%;
+  flex:1;
+  object-fit:cover;
+  border-radius:10px;
+  min-height:0;
+}
+.card-back .char-name{
+  font-size:clamp(9px,2.2vw,11px);
+  color:var(--text-soft);letter-spacing:1px;
+  font-family:'Zen Marugothic',sans-serif;
+  flex-shrink:0;
+}
+
+/* ════ 褒めポップアップ ════ */
+#praise-overlay{
+  position:fixed;inset:0;
+  background:rgba(100,50,120,0.55);
+  backdrop-filter:blur(6px);
+  display:flex;align-items:center;justify-content:center;
+  z-index:100;opacity:0;pointer-events:none;
+  transition:opacity 0.25s ease;
+  padding:16px;
+  overflow-y:auto;
+}
+#praise-overlay.show{opacity:1;pointer-events:all;}
+
+.praise-card{
+  background:white;
+  border-radius:28px;
+  padding:24px 20px 20px;
+  width:min(380px,94vw);
+  text-align:center;
+  box-shadow:0 20px 60px rgba(160,80,180,0.35);
+  transform:scale(0.85) translateY(20px);
+  transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  position:relative;overflow:hidden;
+  margin:auto;
+}
+#praise-overlay.show .praise-card{transform:scale(1) translateY(0);}
+
+.praise-card::before{
+  content:'';position:absolute;top:-30px;right:-30px;
+  width:120px;height:120px;
+  background:radial-gradient(circle,rgba(240,160,200,0.3),transparent 70%);
+  border-radius:50%;
+}
+
+.praise-img{
+  width:min(200px,50vw);
+  height:min(200px,50vw);
+  object-fit:cover;
+  border-radius:20px;
+  border:3px solid rgba(240,180,210,0.6);
+  box-shadow:0 4px 16px rgba(200,100,160,0.25);
+  margin-bottom:12px;
+  animation:popIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+@keyframes popIn{from{transform:scale(0.5);opacity:0;}to{transform:scale(1);opacity:1;}}
+
+.praise-char{
+  font-size:clamp(10px,2.5vw,12px);letter-spacing:3px;color:var(--purple);
+  font-family:'Zen Marugothic',sans-serif;margin-bottom:8px;
+}
+.praise-msg{
+  font-size:clamp(13px,3.5vw,17px);font-weight:800;color:var(--brown-dark);
+  line-height:1.8;margin-bottom:16px;
+}
+.praise-msg .highlight{color:var(--pink);}
+
+.btn-close-praise{
+  background:linear-gradient(135deg,#f0a0c8,#c8a0f0);
+  color:white;font-family:'M PLUS Rounded 1c',sans-serif;
+  font-weight:800;font-size:15px;letter-spacing:2px;
+  padding:13px 36px;border:none;border-radius:50px;cursor:pointer;
+  box-shadow:0 4px 0 rgba(180,70,140,0.3);
+  position:relative;overflow:hidden;
+  transition:transform 0.1s,box-shadow 0.1s;
+}
+.btn-close-praise::after{content:'';position:absolute;top:0;left:0;right:0;height:50%;background:rgba(255,255,255,0.2);border-radius:50px 50px 0 0;}
+.btn-close-praise:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(180,70,140,0.3);}
+
+/* ════ 全部めくったフィナーレ ════ */
+#s-finale{
+  position:fixed;inset:0;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:20px;padding:32px 20px;
+  background:linear-gradient(160deg,#fce8f2 0%,#f4eafc 40%,#e8f0fc 100%);
+  opacity:0;pointer-events:none;
+  transition:opacity 0.5s ease;
+  z-index:50;
+}
+#s-finale.show{opacity:1;pointer-events:all;}
+
+.finale-star{font-size:60px;animation:starSpin 2s ease-in-out infinite;}
+@keyframes starSpin{0%,100%{transform:rotate(-10deg) scale(1);}50%{transform:rotate(10deg) scale(1.1);}}
+
+.finale-h{
+  font-family:'Shippori Mincho',serif;
+  font-size:clamp(26px,7vw,38px);font-weight:800;
+  color:var(--brown-dark);letter-spacing:3px;text-align:center;line-height:1.4;
+}
+.finale-msg{
+  font-size:15px;color:var(--text);line-height:2;
+  text-align:center;
+  background:rgba(255,255,255,0.8);
+  border:1.5px solid rgba(240,180,210,0.5);
+  border-radius:20px;padding:16px 20px;
+  width:min(320px,90vw);
+}
+.finale-msg strong{color:var(--brown);font-weight:800;}
+
+.btn-retry{
+  background:linear-gradient(135deg,#f0a0c8 0%,#c8a0f0 100%);
+  color:white;font-family:'M PLUS Rounded 1c',sans-serif;
+  font-weight:800;font-size:16px;letter-spacing:2px;
+  padding:15px 36px;border:none;border-radius:50px;cursor:pointer;
+  box-shadow:0 5px 0 rgba(180,70,140,0.3);
+  transition:transform 0.1s,box-shadow 0.1s;
+}
+.btn-retry:active{transform:translateY(4px);box-shadow:0 1px 0 rgba(180,70,140,0.3);}
+
+/* コンフェッティ */
+.cp{position:fixed;pointer-events:none;z-index:999;animation:cpFall linear forwards;}
+@keyframes cpFall{0%{transform:translateY(-20px) rotate(0deg) scale(1);opacity:1;}100%{transform:translateY(105vh) rotate(600deg) scale(0.3);opacity:0;}}
+</style>
+</head>
+<body>
+
+<!-- TITLE -->
+<div id="s-title">
+  <span class="title-badge">✦ FOR JURI ✦</span>
+  <h1 class="title-h1">シナモンたちから<br>ほめほめカード🎀</h1>
+  <p class="title-sub">カードをめくると<br>みんなが樹里ちゃんを褒めてくれるよ！</p>
+  <div class="hero-wrap">
+    <div class="hero-aura"></div>
+    <img class="hero-img" src="images/moka.png" alt="モカ">
+  </div>
+  <button class="btn-start" onclick="startGame()">カードをめくる 🎀</button>
+</div>
+
+<!-- CARDS -->
+<div id="s-cards">
+  <div class="cards-header">
+    <h2>どれからめくる？</h2>
+    <p>タップしてカードをひらいてね</p>
+  </div>
+  <div class="progress-wrap">
+    <span class="progress-label">めくった数</span>
+    <div class="progress-bar-bg"><div class="progress-bar" id="prog-bar"></div></div>
+    <span class="progress-count" id="prog-count">0 / 12</span>
+  </div>
+  <div class="card-grid" id="card-grid"></div>
+</div>
+
+<!-- 褒めポップアップ -->
+<div id="praise-overlay" onclick="closePraise()">
+  <div class="praise-card" onclick="event.stopPropagation()">
+    <img class="praise-img" id="praise-img" src="" alt="">
+    <div class="praise-char" id="praise-char"></div>
+    <div class="praise-msg" id="praise-msg"></div>
+    <button class="btn-close-praise" onclick="closePraise()">ありがとう！🌟</button>
+  </div>
+</div>
+
+<!-- フィナーレ -->
+<div id="s-finale">
+  <div class="finale-star">🌟</div>
+  <h2 class="finale-h">全部めくったね！<br>すごいすごい！</h2>
+  <div class="finale-msg">
+    樹里ちゃんは<strong>英語も折り紙も字もボーイスカウトも</strong>、<br>
+    なんでもできる<strong>最高の女の子</strong>だよ！<br>
+    シナモンたちみんなが<strong>大好き</strong>だよ🌸
+  </div>
+  <button class="btn-retry" onclick="resetGame()">もう一度あそぶ 🎀</button>
+</div>
+
+<script>
+// ══ キャラクターデータ ══
+// 画像ファイルは images/ フォルダに入れてください
+// 画像を追加・変更するときはここを編集するだけ！
+const CHARACTERS = [
+  {
+    name: 'シナモロール',
+    img: 'images/chara01.png',
+    msg: '樹里ちゃんの<span class="highlight">笑顔がキラキラ</span>してて<br>いるだけで嬉しいよ！✨',
+  },
+  {
+    name: 'モカ',
+    img: 'images/chara02.png',
+    msg: '樹里ちゃんの<span class="highlight">折り紙の腕前</span>はすごい！<br>本当に尊敬してるよ🦢',
+  },
+  {
+    name: 'シナモエンジェル',
+    img: 'images/chara03.png',
+    msg: '樹里ちゃんって<span class="highlight">英語もできちゃう</span>なんて<br>かっこよすぎる！🌟',
+  },
+  {
+    name: 'ポチャッコ',
+    img: 'images/chara04.png',
+    msg: '樹里ちゃんの<span class="highlight">きれいな字</span>、<br>いつも見とれちゃうよ！📝',
+  },
+  {
+    name: 'シナモン＆フレンズ',
+    img: 'images/chara05.png',
+    msg: 'みんなで言うよ！<br><span class="highlight">樹里ちゃん、大好き！</span>🌸',
+  },
+  {
+    name: 'ぐでたま',
+    img: 'images/chara06.png',
+    msg: 'だるいけど…<br>樹里ちゃんは<span class="highlight">特別な存在</span>だよ…🥚',
+  },
+  {
+    name: 'けろっぴ',
+    img: 'images/chara07.png',
+    msg: '樹里ちゃんって<span class="highlight">なんでも一生懸命</span>で<br>見てると元気出るよ！🐸',
+  },
+  {
+    name: 'マイメロディ',
+    img: 'images/chara08.png',
+    msg: '樹里ちゃんみたいに<span class="highlight">やさしくてかわいい子</span><br>世界一だよ！🎀',
+  },
+  {
+    name: 'クロミ',
+    img: 'images/chara09.png',
+    msg: 'ふふ…樹里ちゃんのこと<br><span class="highlight">めちゃくちゃ好き</span>なんだよね🖤',
+  },
+  {
+    name: 'キキ＆ララ',
+    img: 'images/chara10.png',
+    msg: '樹里ちゃんは<span class="highlight">星みたいに輝いて</span>て<br>みんなを明るくするね🌙',
+  },
+  {
+    name: 'ポムポムプリン',
+    img: 'images/chara11.png',
+    msg: '樹里ちゃんって<span class="highlight">ボーイスカウトも頑張る</span><br>すごい女の子だよ！🏅',
+  },
+  {
+    name: 'ハンギョドン',
+    img: 'images/chara12.png',
+    msg: '樹里ちゃんって<span class="highlight">みんなに優しくて</span><br>本当に大好きだよ🌸',
+  },
+];
+
+let flippedCount = 0;
+let currentChar = null;
+
+function startGame() {
+  document.getElementById('s-title').classList.add('hide');
+  const cards = document.getElementById('s-cards');
+  cards.classList.add('active');
+  buildCards();
+}
+
+function buildCards() {
+  const grid = document.getElementById('card-grid');
+  grid.innerHTML = '';
+  flippedCount = 0;
+  updateProgress();
+
+  CHARACTERS.forEach((char, i) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.dataset.idx = i;
+    card.innerHTML = `
+      <div class="card-inner">
+        <div class="card-front"></div>
+        <div class="card-back">
+          <img src="${char.img}" alt="${char.name}">
+          <span class="char-name">${char.name}</span>
+        </div>
+      </div>`;
+    card.addEventListener('click', () => flipCard(card, i));
+    grid.appendChild(card);
+  });
+}
+
+function flipCard(card, idx) {
+  if (card.classList.contains('flipped')) return;
+
+  // プルプル溜め
+  card.style.transform = 'scale(0.88)';
+  setTimeout(() => { card.style.transform = 'scale(1.06) rotate(-3deg)'; card.style.transition = 'transform 0.08s'; }, 80);
+  setTimeout(() => { card.style.transform = 'scale(1.03) rotate(3deg)'; }, 160);
+  setTimeout(() => { card.style.transform = 'scale(1.08) rotate(-2deg)'; }, 240);
+  setTimeout(() => { card.style.transform = 'scale(1) rotate(0)'; card.style.transition = ''; }, 320);
+
+  setTimeout(() => {
+    card.classList.add('flipped');
+    flippedCount++;
+    updateProgress();
+    currentChar = CHARACTERS[idx];
+    setTimeout(() => showPraise(currentChar), 400);
+  }, 400);
+}
+
+function updateProgress() {
+  const total = CHARACTERS.length;
+  document.getElementById('prog-bar').style.width = (flippedCount / total * 100) + '%';
+  document.getElementById('prog-count').textContent = `${flippedCount} / ${total}`;
+}
+
+function showPraise(char) {
+  document.getElementById('praise-img').src = char.img;
+  document.getElementById('praise-char').textContent = `✦ ${char.name} より ✦`;
+  document.getElementById('praise-msg').innerHTML = char.msg;
+  document.getElementById('praise-overlay').classList.add('show');
+}
+
+function closePraise() {
+  document.getElementById('praise-overlay').classList.remove('show');
+  if (flippedCount === CHARACTERS.length) {
+    setTimeout(showFinale, 500);
+  }
+}
+
+function showFinale() {
+  document.getElementById('s-finale').classList.add('show');
+  launchConfetti();
+}
+
+function resetGame() {
+  document.getElementById('s-finale').classList.remove('show');
+  buildCards();
+}
+
+function launchConfetti() {
+  const c = ['#f5b8d0','#c8b0f5','#b0d0f8','#f8d0a8','#b8e8c8','#f8c0d8','#ffe0a0'];
+  for (let i = 0; i < 80; i++) {
+    setTimeout(() => {
+      const el = document.createElement('div');
+      el.className = 'cp';
+      const s = 7 + Math.random() * 12;
+      el.style.cssText = `left:${Math.random()*100}vw;top:-20px;width:${s}px;height:${s}px;background:${c[Math.floor(Math.random()*c.length)]};border-radius:${Math.random()>0.4?'50%':'3px'};animation-duration:${1.4+Math.random()*2.2}s;animation-delay:${i*25}ms;`;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 6000);
+    }, i * 25);
+  }
+}
+</script>
+</body>
+</html>
