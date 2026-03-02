@@ -68,6 +68,29 @@ html,body{
 }
 @keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
 
+.title-deco{
+  display:flex;gap:16px;font-size:28px;
+  animation:float 3s ease-in-out infinite;
+}
+.title-deco span:nth-child(2){animation-delay:0.3s;}
+.title-deco span:nth-child(3){animation-delay:0.6s;}
+.title-deco span:nth-child(4){animation-delay:0.9s;}
+.title-deco span:nth-child(5){animation-delay:1.2s;}
+
+.title-msg{
+  width:min(300px,85vw);
+  background:rgba(255,255,255,0.8);
+  backdrop-filter:blur(10px);
+  border:1.5px solid rgba(240,180,210,0.5);
+  border-radius:20px;
+  padding:16px 20px;
+  text-align:center;
+  font-size:14px;
+  color:var(--text);
+  line-height:2;
+  box-shadow:0 4px 20px rgba(200,150,180,0.12);
+}
+
 .btn-start{
   background:linear-gradient(135deg,#f0a0c8 0%,#c8a0f0 100%);
   color:white;font-family:'M PLUS Rounded 1c',sans-serif;
@@ -321,9 +344,11 @@ html,body{
   <span class="title-badge">✦ FOR JURI ✦</span>
   <h1 class="title-h1">シナモンたちから<br>ほめほめカード🎀</h1>
   <p class="title-sub">カードをめくると<br>みんなが樹里ちゃんを褒めてくれるよ！</p>
-  <div class="hero-wrap">
-    <div class="hero-aura"></div>
-    <img class="hero-img" src="images/moka.png" alt="モカ">
+  <div class="title-deco">
+    <span>🌟</span><span>🎀</span><span>💕</span><span>⭐</span><span>🌸</span>
+  </div>
+  <div class="title-msg">
+    <p>樹里ちゃんへ<br>シナモンたちからのひみつのプレゼント🎁<br>全部めくってみてね！</p>
   </div>
   <button class="btn-start" onclick="startGame()">カードをめくる 🎀</button>
 </div>
@@ -372,7 +397,7 @@ const CHARACTERS = [
   {
     name: 'シナモロール',
     img: 'images/chara01.png',
-    msg: '樹里ちゃんの<span class="highlight">笑顔がキラキラ</span>してて<br>いるだけで嬉しいよ！✨',
+    msg: '樹里ちゃんの<span class="highlight">笑顔はキラキラ</span>✨<br>いるだけで嬉しくなるよ！',
   },
   {
     name: 'モカ',
