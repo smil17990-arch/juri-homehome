@@ -17,6 +17,7 @@ html,body{
   font-family:'M PLUS Rounded 1c',sans-serif;
   background:linear-gradient(160deg,#fce8f2 0%,#f4eafc 40%,#e8f0fc 100%);
   overflow-x:hidden;
+  overflow-y:auto;
 }
 
 /* ════ TITLE SCREEN ════ */
@@ -67,6 +68,29 @@ html,body{
 }
 @keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
 
+.title-deco{
+  display:flex;gap:16px;font-size:28px;
+  animation:float 3s ease-in-out infinite;
+}
+.title-deco span:nth-child(2){animation-delay:0.3s;}
+.title-deco span:nth-child(3){animation-delay:0.6s;}
+.title-deco span:nth-child(4){animation-delay:0.9s;}
+.title-deco span:nth-child(5){animation-delay:1.2s;}
+
+.title-msg{
+  width:min(300px,85vw);
+  background:rgba(255,255,255,0.8);
+  backdrop-filter:blur(10px);
+  border:1.5px solid rgba(240,180,210,0.5);
+  border-radius:20px;
+  padding:16px 20px;
+  text-align:center;
+  font-size:14px;
+  color:var(--text);
+  line-height:2;
+  box-shadow:0 4px 20px rgba(200,150,180,0.12);
+}
+
 .btn-start{
   background:linear-gradient(135deg,#f0a0c8 0%,#c8a0f0 100%);
   color:white;font-family:'M PLUS Rounded 1c',sans-serif;
@@ -112,18 +136,23 @@ html,body{
 
 .card-grid{
   display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:clamp(8px,2vw,12px);
+  grid-template-columns:repeat(3,1fr);
+  gap:clamp(10px,2.5vw,16px);
   width:min(420px,96vw);
 }
 
-/* タブレットは4列のまま広く、スマホは3列に */
-@media(max-width:400px){
-  .card-grid{grid-template-columns:repeat(3,1fr);width:96vw;}
-}
+/* タブレット（600px以上）は3列のまま大きく */
 @media(min-width:600px){
-  .card-grid{grid-template-columns:repeat(4,1fr);width:min(520px,90vw);gap:14px;}
-  .praise-card{padding:32px 28px 28px;}
+  .card-grid{
+    grid-template-columns:repeat(3,1fr);
+    width:min(600px,88vw);
+    gap:18px;
+  }
+}
+
+/* スマホ小（360px以下）は2列 */
+@media(max-width:360px){
+  .card-grid{grid-template-columns:repeat(2,1fr);width:96vw;}
 }
 
 /* ════ カード ════ */
@@ -187,6 +216,11 @@ html,body{
   color:var(--text-soft);letter-spacing:1px;
   font-family:'Zen Marugothic',sans-serif;
   flex-shrink:0;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  width:100%;
+  text-align:center;
 }
 
 /* ════ 褒めポップアップ ════ */
@@ -310,9 +344,11 @@ html,body{
   <span class="title-badge">✦ FOR JURI ✦</span>
   <h1 class="title-h1">シナモンたちから<br>ほめほめカード🎀</h1>
   <p class="title-sub">カードをめくると<br>みんなが樹里ちゃんを褒めてくれるよ！</p>
-  <div class="hero-wrap">
-    <div class="hero-aura"></div>
-    <img class="hero-img" src="images/moka.png" alt="モカ">
+  <div class="title-deco">
+    <span>🌟</span><span>🎀</span><span>💕</span><span>⭐</span><span>🌸</span>
+  </div>
+  <div class="title-msg">
+    <p>樹里ちゃんへ<br>シナモンたちからのひみつのプレゼント🎁<br>全部めくってみてね！</p>
   </div>
   <button class="btn-start" onclick="startGame()">カードをめくる 🎀</button>
 </div>
@@ -361,7 +397,7 @@ const CHARACTERS = [
   {
     name: 'シナモロール',
     img: 'images/chara01.png',
-    msg: '樹里ちゃんの<span class="highlight">笑顔がキラキラ</span>してて<br>いるだけで嬉しいよ！✨',
+    msg: '樹里ちゃんの<span class="highlight">笑顔はキラキラ</span>✨<br>いるだけで嬉しくなるよ！',
   },
   {
     name: 'モカ',
@@ -379,7 +415,7 @@ const CHARACTERS = [
     msg: '樹里ちゃんの<span class="highlight">きれいな字</span>、<br>いつも見とれちゃうよ！📝',
   },
   {
-    name: 'シナモン＆フレンズ',
+    name: 'みんな大集合',
     img: 'images/chara05.png',
     msg: 'みんなで言うよ！<br><span class="highlight">樹里ちゃん、大好き！</span>🌸',
   },
@@ -474,8 +510,9 @@ function flipCard(card, idx) {
 
 function updateProgress() {
   const total = CHARACTERS.length;
-  document.getElementById('prog-bar').style.width = (flippedCount / total * 100) + '%';
-  document.getElementById('prog-count').textContent = `${flippedCount} / ${total}`;
+  const count = Math.min(flippedCount, total);
+  document.getElementById('prog-bar').style.width = (count / total * 100) + '%';
+  document.getElementById('prog-count').textContent = `${count} / ${total}`;
 }
 
 function showPraise(char) {
